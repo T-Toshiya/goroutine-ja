@@ -107,7 +107,7 @@ func _main() {
 	for water > 0 {
 		hwCount++
 		water -= 600 * MilliLiterWater
-		// TODO: ゴールーチンでboil関数を呼び出す
+		go boil(ctx, hwch, 600*MilliLiterWater)
 	}
 
 	// 豆を挽く
@@ -142,7 +142,7 @@ func _main() {
 
 	var coffee Coffee
 	for i := 0; i < cfCount; i++ {
-		// TODO: チャネルから送られてくるコーヒーをcoffeeに足していく
+		coffee += <-cfch
 	}
 	fmt.Println(coffee)
 }
@@ -159,6 +159,7 @@ func grind(ctx context.Context, ch chan<- GroundBean, beans Bean) {
 	defer trace.StartRegion(ctx, "grind").End()
 	time.Sleep(200 * time.Millisecond)
 	// TODO: チャネルに挽いた豆を渡す
+	ch <- GroundBean(beans)
 }
 
 // コーヒーを淹れる
